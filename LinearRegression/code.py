@@ -19,3 +19,37 @@ fig = px.histogram(medical_df,
                    title='Distribution of Age')
 fig.update_layout(bargap=0.1)
 fig.show()
+fig = px.histogram(medical_df,
+                   x='bmi',
+                   marginal='box',
+                   color_discrete_sequence=['red'],
+                   title='Distribution of BMI (Body Mass Index)')
+fig.update_layout(bargap=0.1)
+fig.show()
+fig = px.histogram(medical_df,
+                   x='charges',
+                   marginal='box',
+                   color='smoker',
+                   color_discrete_sequence=['green', 'grey'],
+                   title='Annual Medical Charges')
+fig.update_layout(bargap=0.1)
+fig.show()
+px.histogram(medical_df, x='smoker', color='sex', title='Smoker')
+fig = px.scatter(medical_df,
+                 x='age',
+                 y='charges',
+                 color='smoker',
+                 opacity=0.8,
+                 hover_data=['sex'],
+                 title='Age vs. Charges')
+fig.update_traces(marker_size=5)
+fig.show()
+
+#Correlation
+medical_df.charges.corr(medical_df.age)
+
+#To compute the correlation for categorical columns, they must first be converted into numeric columns.
+smoker_values = {'no': 0, 'yes': 1}
+smoker_numeric = medical_df.smoker.map(smoker_values)
+medical_df.charges.corr(smoker_numeric)
+
