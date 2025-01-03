@@ -60,6 +60,7 @@ plt.show()
 
 
 #Linear Regression using single feature
+non_smoker_df = medical_df[medical_df.smoker == 'no']
 plt.title('Age vs. Charges')
 sns.scatterplot(data=non_smoker_df, x='age', y='charges', alpha=0.7, s=15);
 
@@ -91,3 +92,51 @@ targets = non_smoker_df['charges']
 predicted = estimate_charges(non_smoker_df.age, w, b)
 
 rmse(targets, predicted)
+
+#Linear Regression using Scikit-learn
+from sklearn.linear_model import LinearRegression
+model = LinearRegression()
+
+#fit(X, y, sample_weight=None) method of sklearn.linear_model._base.LinearRegression instance
+    #Fit linear model.
+
+    #Parameters
+    # ----------
+    # X : {array-like, sparse matrix} of shape (n_samples, n_features)
+    #     Training data
+
+    # y : array-like of shape (n_samples,) or (n_samples, n_targets)
+    #     Target values. Will be cast to X's dtype if necessary
+
+inputs = non_smoker_df[['age']]
+targets = non_smoker_df.charges
+print('inputs.shape :', inputs.shape)
+print('targes.shape :', targets.shape)
+
+model.fit(inputs, targets)
+
+model.predict(np.array([[23],
+                        [37],
+                        [61]]))
+
+# w
+model.coef_
+# b
+model.intercept_
+
+predictions = model.predict(inputs)
+
+#charges=w1*age+w2*bmi+b
+
+# Create inputs and targets
+inputs, targets = non_smoker_df[['age', 'bmi']], non_smoker_df['charges']
+
+# Create and train the model
+model = LinearRegression().fit(inputs, targets)
+
+# Generate predictions
+predictions = model.predict(inputs)
+
+# Compute loss to evalute the model
+loss = rmse(targets, predictions)
+print('Loss:', loss)
