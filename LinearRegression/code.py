@@ -53,3 +53,16 @@ smoker_values = {'no': 0, 'yes': 1}
 smoker_numeric = medical_df.smoker.map(smoker_values)
 medical_df.charges.corr(smoker_numeric)
 
+numeric_df = medical_df.select_dtypes(include=['float64', 'int64'])
+sns.heatmap(numeric_df.corr(), cmap='Reds', annot=True)
+plt.title('Correlation Matrix');
+plt.show()
+
+
+#Linear Regression using single feature
+plt.title('Age vs. Charges')
+sns.scatterplot(data=non_smoker_df, x='age', y='charges', alpha=0.7, s=15);
+
+#A line on the X&Y coordinates has the following formula:
+#y=wx+b
+#The numbers w and b are called the parameters or weights of the model.
