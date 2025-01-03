@@ -66,3 +66,28 @@ sns.scatterplot(data=non_smoker_df, x='age', y='charges', alpha=0.7, s=15);
 #A line on the X&Y coordinates has the following formula:
 #y=wx+b
 #The numbers w and b are called the parameters or weights of the model.
+
+def estimate_charges(age, w, b):
+    return w * age + b
+
+w = 50
+b = 100
+
+ages = non_smoker_df.age
+estimated_charges = estimate_charges(ages, w, b)
+target = non_smoker_df.charges
+
+plt.plot(ages, estimated_charges, 'r', alpha=0.9);
+plt.scatter(ages, target, s=8,alpha=0.8);
+plt.xlabel('Age');
+plt.ylabel('Charges')
+plt.legend(['Estimate', 'Actual']);
+
+import numpy as np
+def rmse(targets, predictions):
+    return np.sqrt(np.mean(np.square(targets - predictions)))
+
+targets = non_smoker_df['charges']
+predicted = estimate_charges(non_smoker_df.age, w, b)
+
+rmse(targets, predicted)
