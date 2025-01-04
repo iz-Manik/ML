@@ -21,3 +21,26 @@ if os.path.exists(data_dir):
     print(os.listdir(data_dir))
 else:
     print(f"Directory {data_dir} does not exist.")
+
+
+train_csv = data_dir + '/weatherAUS.csv'
+import pandas as pd
+raw_df = pd.read_csv(train_csv)
+raw_df
+
+import plotly.express as px
+import matplotlib
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+sns.set_style('darkgrid')
+matplotlib.rcParams['font.size'] = 14
+matplotlib.rcParams['figure.figsize'] = (10, 6)
+matplotlib.rcParams['figure.facecolor'] = '#00000000'
+
+px.histogram(raw_df, x='Location', title='Location vs. Rainy Days', color='RainToday')
+
+px.histogram(raw_df,
+             x='Temp3pm',
+             title='Temperature at 3 pm vs. Rain Tomorrow',
+             color='RainTomorrow')
