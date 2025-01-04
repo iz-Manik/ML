@@ -140,3 +140,56 @@ predictions = model.predict(inputs)
 # Compute loss to evalute the model
 loss = rmse(targets, predictions)
 print('Loss:', loss)
+
+sns.barplot(data=medical_df, x='smoker', y='charges');
+smoker_codes = {'no': 0, 'yes': 1}
+medical_df['smoker_code'] = medical_df.smoker.map(smoker_codes)
+
+# We can now use the `smoker_df` column for linear regression.
+
+# charges = w1 * age + w2 * bmi + w3 * children + w4 * smoker + b
+# Create inputs and targets
+inputs, targets = medical_df[['age', 'bmi', 'children', 'smoker_code']], medical_df['charges']
+
+# Create and train the model
+model = LinearRegression().fit(inputs, targets)
+
+# Generate predictions
+predictions = model.predict(inputs)
+
+# Compute loss to evalute the model
+loss = rmse(targets, predictions)
+print('Loss:', loss)
+
+from sklearn import preprocessing
+enc = preprocessing.OneHotEncoder()
+enc.fit(medical_df[['region']])
+enc.categories_
+
+one_hot = enc.transform(medical_df[['region']]).toarray()
+one_hot
+# array([[0., 0., 0., 1.],
+#        [0., 0., 1., 0.],
+#        [0., 0., 1., 0.],
+#        ...,
+#        [0., 0., 1., 0.],
+#        [0., 0., 0., 1.],
+#        [0., 1., 0., 0.]])
+
+# Because different columns have different ranges, we run into two issues:
+
+# We can't compare the weights of different column to identify which features are important
+# A column with a larger range of inputs may disproportionately affect the loss and dominate the optimization process.
+# For this reason, it's common practice to scale (or standardize) the values in numeric column by subtracting the mean and dividing by the standard deviation.
+
+from sklearn.preprocessing import StandardScaler
+numeric_cols = ['age', 'bmi', 'children']
+scaler = StandardScaler()
+scaler.fit(medical_df[numeric_cols])
+
+scaler.mean_
+
+scaler.var_
+
+scaled_inputs = scaler.transform(medical_df[numeric_cols])
+scaled_inputs
