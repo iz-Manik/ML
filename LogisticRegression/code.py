@@ -68,3 +68,51 @@ test_df = raw_df[year > 2015]
 
 input_cols = list(train_df.columns)[1:-1]
 target_col = 'RainTomorrow'
+
+train_inputs = train_df[input_cols].copy()
+train_targets = train_df[target_col].copy()
+
+val_inputs = val_df[input_cols].copy()
+val_targets = val_df[target_col].copy()
+
+test_inputs = test_df[input_cols].copy()
+test_targets = test_df[target_col].copy()
+
+import numpy as np
+
+numeric_cols = train_inputs.select_dtypes(include=np.number).columns.tolist()
+categorical_cols = train_inputs.select_dtypes('object').columns.tolist()
+
+
+### Imputing Missing Numeric Data
+
+# Machine learning models can't work with missing numerical data. The process of filling missing values is called imputation.
+
+# <img src="https://i.imgur.com/W7cfyOp.png" width="480">
+
+# There are several techniques for imputation, but we'll use the most basic one: replacing missing values with the average value in the column using the `SimpleImputer` class from `sklearn.impute`.
+
+from sklearn.impute import SimpleImputer
+
+imputer = SimpleImputer(strategy = 'mean')
+
+imputer.fit(raw_df[numeric_cols])
+
+train_inputs[numeric_cols] = imputer.transform(train_inputs[numeric_cols])
+val_inputs[numeric_cols] = imputer.transform(val_inputs[numeric_cols])
+test_inputs[numeric_cols] = imputer.transform(test_inputs[numeric_cols])
+
+## Scaling Numeric Features
+
+# Another good practice is to scale numeric features to a small range of values e.g. $(0,1)$ or $(-1,1)$. Scaling numeric features ensures that no particular feature has a disproportionate impact on the model's loss. Optimization algorithms also work better in practice with smaller numbers.
+
+# The numeric columns in our dataset have varying ranges.
+
+from sklearn.preprocessing import MinMaxScaler
+
+scaler = MinMaxScaler()
+scaler.fit(raw_df[numeric_cols])
+
+train_inputs[numeric_cols] = scaler.transform(train_inputs[numeric_cols])
+val_inputs[numeric_cols] = scaler.transform(val_inputs[numeric_cols])
+test_inputs[numeric_cols] = scaler.transform(test_inputs[numeric_cols])
