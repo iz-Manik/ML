@@ -43,4 +43,28 @@ px.histogram(raw_df, x='Location', title='Location vs. Rainy Days', color='RainT
 px.histogram(raw_df,
              x='Temp3pm',
              title='Temperature at 3 pm vs. Rain Tomorrow',
-             color='RainTomorrow')
+             color='RainTomorrow')\
+
+px.scatter(raw_df.sample(2000),
+           title='Temp (3 pm) vs. Humidity (3 pm)',
+           x='Temp3pm',
+           y='Humidity3pm',
+           color='RainTomorrow')
+
+
+from sklearn.model_selection import train_test_split
+
+train_val_df, test_df = train_test_split(raw_df, test_size=0.2, random_state=42)
+train_df, val_df = train_test_split(train_val_df, test_size=0.25, random_state=42)
+
+plt.title('No. of Rows per Year')
+sns.countplot(x=pd.to_datetime(raw_df.Date).dt.year);
+
+year = pd.to_datetime(raw_df.Date).dt.year
+
+train_df = raw_df[year < 2015]
+val_df = raw_df[year == 2015]
+test_df = raw_df[year > 2015]
+
+input_cols = list(train_df.columns)[1:-1]
+target_col = 'RainTomorrow'
