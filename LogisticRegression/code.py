@@ -116,3 +116,45 @@ scaler.fit(raw_df[numeric_cols])
 train_inputs[numeric_cols] = scaler.transform(train_inputs[numeric_cols])
 val_inputs[numeric_cols] = scaler.transform(val_inputs[numeric_cols])
 test_inputs[numeric_cols] = scaler.transform(test_inputs[numeric_cols])
+
+from sklearn.preprocessing import OneHotEncoder
+encoder = OneHotEncoder(sparse_output=False, handle_unknown='ignore')
+encoder.fit(raw_df[categorical_cols])
+
+encoded_cols = list(encoder.get_feature_names_out(categorical_cols))
+print(encoded_cols)
+
+train_inputs[encoded_cols] = encoder.transform(train_inputs[categorical_cols])
+val_inputs[encoded_cols] = encoder.transform(val_inputs[categorical_cols])
+test_inputs[encoded_cols] = encoder.transform(test_inputs[categorical_cols])
+
+train_inputs.to_parquet('train_inputs.parquet')
+val_inputs.to_parquet('val_inputs.parquet')
+test_inputs.to_parquet('test_inputs.parquet')
+
+pd.DataFrame(train_targets).to_parquet('train_targets.parquet')
+pd.DataFrame(val_targets).to_parquet('val_targets.parquet')
+pd.DataFrame(test_targets).to_parquet('test_targets.parquet')
+
+train_inputs = pd.read_parquet('train_inputs.parquet')
+val_inputs = pd.read_parquet('val_inputs.parquet')
+test_inputs = pd.read_parquet('test_inputs.parquet')
+
+train_targets = pd.read_parquet('train_targets.parquet')[target_col]
+val_targets = pd.read_parquet('val_targets.parquet')[target_col]
+test_targets = pd.read_parquet('test_targets.parquet')[target_col]
+
+from sklearn.linear_model import LogisticRegression
+
+model = LogisticRegression(solver='liblinear')
+
+model.fit(train_inputs[numeric_cols + encoded_cols], train_targets)
+
+X_train = train_inputs[numeric_cols + encoded_cols]
+X_val = val_inputs[numeric_cols + encoded_cols]
+X_test = test_inputs[numeric_cols + encoded_cols]
+
+train_preds = model.predict(X_train)
+
+train_probs = model.predict_proba(X_train)
+train_probs
