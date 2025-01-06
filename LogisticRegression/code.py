@@ -158,3 +158,30 @@ train_preds = model.predict(X_train)
 
 train_probs = model.predict_proba(X_train)
 train_probs
+
+train_probs = model.predict_proba(X_train)
+train_probs
+from sklearn.metrics import accuracy_score
+
+accuracy_score(train_targets, train_preds)
+
+from sklearn.metrics import confusion_matrix
+confusion_matrix(train_targets, train_preds, normalize='true')
+
+def predict_and_plot(inputs, targets, name=''):
+    preds = model.predict(inputs)
+
+    accuracy = accuracy_score(targets, preds)
+    print("Accuracy: {:.2f}%".format(accuracy * 100))
+
+    cf = confusion_matrix(targets, preds, normalize='true')
+    plt.figure()
+    sns.heatmap(cf, annot=True)
+    plt.xlabel('Prediction')
+    plt.ylabel('Target')
+    plt.title('{} Confusion Matrix'.format(name));
+
+    return preds
+
+train_preds = predict_and_plot(X_train, train_targets, 'Training')
+
