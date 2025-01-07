@@ -14,7 +14,7 @@ dataset_url = 'https://www.kaggle.com/jsphyg/weather-dataset-rattle-package'
 import os
 
 print("Current Working Directory:", os.getcwd())
-data_dir = './logisticregression/weather-dataset-rattle-package'
+data_dir = './weather-dataset-rattle-package'
 
 # Check if the directory exists
 if os.path.exists(data_dir):
