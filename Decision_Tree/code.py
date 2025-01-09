@@ -98,3 +98,55 @@ model.score(X_val, val_targets)
 from sklearn.tree import plot_tree, export_text
 plt.figure(figsize=(80,20))
 plot_tree(model, feature_names=X_train.columns, max_depth=2, filled=True);
+
+
+# How a Decision Tree is Created
+
+# Note the gini value in each box. This is the loss function used by the decision tree to decide
+# which column should be used for splitting the data, and at what point the column should be split.
+# A lower Gini index indicates a better split. A perfect split (only one class on each side) has a Gini index of 0.
+
+model.tree_.max_depth
+tree_text = export_text(model, max_depth=10, feature_names=list(X_train.columns))
+print(tree_text[:5000])
+
+model.feature_importances_
+
+importance_df = pd.DataFrame({
+    'feature': X_train.columns,
+    'importance': model.feature_importances_
+}).sort_values('importance', ascending=False)
+
+plt.title('Feature Importance')
+sns.barplot(data=importance_df.head(10), x='importance', y='feature');
+
+# These arguments are called hyperparameters because they must be configured manually (as opposed to the parameters within the model which are _learned_ from the data. We'll explore a couple of hyperparameters:
+
+# - `max_depth`
+# - `max_leaf_nodes`
+
+model = DecisionTreeClassifier(max_depth=3, random_state=42)
+model.fit(X_train, train_targets)
+
+model.score(X_train, train_targets)
+model.score(X_val, val_targets)
+# Great, while the training accuracy of the model has gone down, the validation accuracy of the model has increased significantly.
+
+def max_depth_error(md):
+    model = DecisionTreeClassifier(max_depth=md, random_state=42)
+    model.fit(X_train, train_targets)
+    train_error = 1 - model.score(X_train, train_targets)
+    val_error = 1 - model.score(X_val, val_targets)
+    return {'Max Depth': md, 'Training Error': train_error, 'Validation Error': val_error}
+
+
+errors_df = pd.DataFrame([max_depth_error(md) for md in range(1, 21)])
+
+### `max_leaf_nodes`
+
+# Another way to control the size of complexity of a decision tree is to limit the number of leaf nodes. This allows branches of the tree to have varying depths.
+
+model = DecisionTreeClassifier(max_leaf_nodes=128, random_state=42)
+model.fit(X_train, train_targets)
+model.score(X_train, train_targets)
+model.score(X_val, val_targets)
